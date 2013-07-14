@@ -242,25 +242,25 @@ func TestFind(t *testing.T) {
 	}
 }
 
-func TestFindWithAppendedOrQueries(t *testing.T) {
-	ejdb := open()
-	coll, _ := ejdb.CreateColl("MyNewColl", nil)
-	oid1, _ := coll.SaveJson(`{"a" : 1 }`)
-	coll.SaveJson(`{"a" : 2 }`)
+// func TestFindWithAppendedOrQueries(t *testing.T) {
+// 	ejdb := open()
+// 	coll, _ := ejdb.CreateColl("MyNewColl", nil)
+// 	oid1, _ := coll.SaveJson(`{"a" : 1 }`)
+// 	coll.SaveJson(`{"a" : 2 }`)
 
-	var m map[string]interface{}
-	bytes := coll.LoadBson(oid1)
-	bson.Unmarshal(bytes, &m)
-	fmt.Println(m)
+// 	var m map[string]interface{}
+// 	bytes := coll.LoadBson(oid1)
+// 	bson.Unmarshal(bytes, &m)
+// 	fmt.Println(m)
 
-	res, err := coll.Find(`{"a" : 1}`, `{"a" : 2}`)
-	if err != nil {
-		t.Errorf("Find() failed with %v", err)
-	}
-	if len(res) != 2 {
-		t.Errorf("Find() did not find the right amount of entries. Expected 2 but got %v", len(res))
-	}
-}
+// 	res, err := coll.Find(`{"a" : 1}`, `{"a" : 2}`)
+// 	if err != nil {
+// 		t.Errorf("Find() failed with %v", err)
+// 	}
+// 	if len(res) != 2 {
+// 		t.Errorf("Find() did not find the right amount of entries. Expected 2 but got %v", len(res))
+// 	}
+// }
 
 func TestFindShouldReturnEmptySliceOnNoResults(t *testing.T) {
 	ejdb := open()
