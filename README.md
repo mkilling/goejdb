@@ -46,7 +46,7 @@ func main() {
 }
 ```
 
-You can save this code in `ejdbtutorial.go` And build:
+You can save this code in `ejdbtutorial.go` and build:
 
 
 ```sh
@@ -54,17 +54,16 @@ go build ejdbtutorial.go
 ./ejdbtutorial
 ```
 
-Manual installation
+Installation
 -------------------------------
 
 ### Prerequisites
 **System libraries:**
 
 * Google Go
-* labix.org/v2/mgo/bson (go get labix.org/v2/mgo/bson)
 * installed tcejdb (see [https://github.com/Softmotions/ejdb/tree/master/tcejdb](https://github.com/Softmotions/ejdb/tree/master/tcejdb) or [Installing on Debian/Ubuntu](https://github.com/Softmotions/ejdb/wiki/Debian-Ubuntu-installation))
 
-### Build and install
+### Install
 
     go get github.com/mkilling/goejdb
 
@@ -141,37 +140,3 @@ Queries
 //  NOTE: Only one index can be used in search query operation.
 func (ejdb *Ejdb) CreateQuery(query string, queries ...string) (*EjQuery, *EjdbError)
 ```
-
-Basic EJDB architecture
-------------------------------------
-**EJDB database files structure**
-
-~~~~~~
-.
-├── <dbname>
-├── <dbname>_<collection1>
-├── ...
-├── <dbname>_<collectionN>
-└── <dbname>_<collectionN>_<fieldpath>.<index ext>
-~~~~~~
-
-Where
-
-* ```<dbname>``` - name of database. It is metadata DB.
-* ```<collectionN>``` - name of collection. Collection database.
-* ```<fieldpath>``` - JSON field path used in index
-* ```<index ext>``` - Collection index extension:
-    * ```.lex``` String index
-    * ```.dec``` Number index
-    * ```.tok``` Array index
-
-Limitations
-------------------------------------
-* One ejdb database can handle up to 1024 collections.
-* Indexes for objects in nested arrays currently not supported (#37)
-
-Related software
-------------------------------------
-[Connect session store backed by EJDB database](https://github.com/Softmotions/connect-session-ejdb)
-
-
