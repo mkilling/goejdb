@@ -242,6 +242,24 @@ func TestFind(t *testing.T) {
 	}
 }
 
+func TestAddOr(t *testing.T) {
+	ejdb := open()
+	coll, _ := ejdb.CreateColl("MyNewColl", nil)
+	coll.SaveJson(`{"a" : 1 }`)
+	coll.SaveJson(`{"a" : 2 }`)
+
+	q, _ := ejdb.CreateQuery(`{}`)
+	err := q.AddOr(`{"a" : 1 }`)
+	if err != nil {
+		t.Errorf("AddOr() failed with %v", err)
+	}
+
+	res, _ := q.Execute(coll)
+	if len(res) != 1 {
+		t.Errorf("AddOr() with subsequent Find() did not find the right amount of entries. Expected 1 but got %v", len(res))
+	}
+}
+
 func TestFindWithAppendedOrQueries(t *testing.T) {
 	ejdb := open()
 	coll, _ := ejdb.CreateColl("MyNewColl", nil)
