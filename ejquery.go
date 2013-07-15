@@ -91,21 +91,33 @@ func (ejdb *Ejdb) CreateQuery(query string, queries ...string) (*EjQuery, *EjdbE
 	query_bson := bson_from_json(query)
 	defer C.bson_destroy(query_bson)
 
-	orqueries_count := len(queries)
-	orqueries := C.malloc(C.size_t(unsafe.Sizeof(C.bson{})) * C.size_t(orqueries_count))
-	defer C.free(orqueries)
-	ptr_orqueries := (*[maxslice]C.bson)(orqueries)
-	for i, q := range queries {
-		bson := bson_from_json(q)
-		(*ptr_orqueries)[i] = *bson
-		defer C.bson_destroy(bson)
+	ptr := C.ejdbcreatequery(ejdb.ptr, query_bson, nil, 0, nil)
+	if ptr == nil {
+		return nil, ejdb.check_error()
 	}
 
-	q := C.ejdbcreatequery(ejdb.ptr, query_bson, (*C.bson)(orqueries), C.int(len(queries)), nil)
-	if q == nil {
-		return nil, ejdb.check_error()
+	q := &EjQuery{ptr, ejdb}
+
+	for _, orquery := range queries {
+		err := q.AddOr(orquery)
+		if err != nil {
+			q.Del()
+			return nil, ejdb.check_error()
+		}
+	}
+
+	return q, nil
+}
+
+// Add OR restriction to query object. Expects orquery to be a JSON string.
+func (q *EjQuery) AddOr(orquery string) (*EjdbError) {
+	bson := bson_from_json(orquery)
+	defer C.bson_destroy(bson)
+	ret := C.ejdbqueryaddor(q.ejdb.ptr, q.ptr, unsafe.Pointer(bson.data))
+	if ret == nil {
+		return q.ejdb.check_error()
 	} else {
-		return &EjQuery{ptr: q, ejdb: ejdb}, nil
+		return nil
 	}
 }
 
