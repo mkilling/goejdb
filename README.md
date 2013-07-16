@@ -1,4 +1,4 @@
-EJDB Go binding [![Build Status](https://travis-ci.org/mkilling/goejdb.png?branch=master)](https://travis-ci.org/mkilling/apple_png)
+EJDB Go binding [![Build Status](https://travis-ci.org/mkilling/goejdb.png?branch=master)](https://travis-ci.org/mkilling/goejdb)
 ==================================
 
 One snippet intro
