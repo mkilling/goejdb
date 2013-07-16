@@ -1,0 +1,12 @@
+language: go
+
+go:
+  - 1.1
+
+before_install:
+  - git clone https://github.com/Softmotions/ejdb.git
+  - cd ejdb/tcejdb
+  - ./configure
+  - make
+  - sudo make install
+  - cd ../..
