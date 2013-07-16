@@ -116,9 +116,8 @@ func (q *EjQuery) AddOr(orquery string) (*EjdbError) {
 	ret := C.ejdbqueryaddor(q.ejdb.ptr, q.ptr, unsafe.Pointer(bson.data))
 	if ret == nil {
 		return q.ejdb.check_error()
-	} else {
-		return nil
 	}
+	return nil
 }
 
 //  Set query hints. `hints` is a JSON string
@@ -143,9 +142,8 @@ func (q *EjQuery) SetHints(hints string) *EjdbError {
 	ret := C.ejdbqueryhints(q.ejdb.ptr, q.ptr, unsafe.Pointer(bsdata))
 	if ret == nil {
 		return q.ejdb.check_error()
-	} else {
-		return nil
 	}
+	return nil
 }
 
 // Execute the query and return all results as a slice of BSON objects
@@ -180,13 +178,13 @@ func (q *EjQuery) ExecuteOne(coll *EjColl) (*[]byte, *EjdbError) {
 	// return results
 	if count == 0 {
 		return nil, err
-	} else {
-		var size C.int
-		bson_blob := C.ejdbqresultbsondata(res, 0, &size)
-		ret := make([]byte, int(size))
-		copy(ret, ((*[maxslice]byte)(bson_blob))[:int(size)])
-		return &ret, err
 	}
+
+	var size C.int
+	bson_blob := C.ejdbqresultbsondata(res, 0, &size)
+	ret := make([]byte, int(size))
+	copy(ret, ((*[maxslice]byte)(bson_blob))[:int(size)])
+	return &ret, err
 }
 
 // Execute the query and only return the number of results it returned, not the results themselves

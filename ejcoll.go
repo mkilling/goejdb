@@ -100,9 +100,8 @@ func (coll *EjColl) Find(query string, queries ...string) ([][]byte, *EjdbError)
 	defer q.Del()
 	if err != nil {
 		return nil, err
-	} else {
-		return q.Execute(coll)
 	}
+	return q.Execute(coll)
 }
 
 // Execute a query specified by JSON strings query, queries and return only the first result as a BSON object
@@ -112,9 +111,8 @@ func (coll *EjColl) FindOne(query string, queries ...string) (*[]byte, *EjdbErro
 	defer q.Del()
 	if err != nil {
 		return nil, err
-	} else {
-		return q.ExecuteOne(coll)
 	}
+	return q.ExecuteOne(coll)
 }
 
 // Execute a query specified by JSON strings query, queries and return the number of results, not the results themselves.
@@ -176,9 +174,8 @@ func (coll *EjColl) SetIndex(ipath string, flags int) *EjdbError {
 	res := C.ejdbsetindex(coll.ptr, c_ipath, C.int(flags))
 	if res {
 		return nil
-	} else {
-		return coll.ejdb.check_error()
 	}
+	return coll.ejdb.check_error()
 }
 
 // Begin transaction for EJDB collection.
@@ -186,9 +183,8 @@ func (coll *EjColl) BeginTransaction() *EjdbError {
 	res := C.ejdbtranbegin(coll.ptr)
 	if res {
 		return nil
-	} else {
-		return coll.ejdb.check_error()
 	}
+	return coll.ejdb.check_error()
 }
 
 // Commit transaction for EJDB collection.
@@ -196,9 +192,8 @@ func (coll *EjColl) CommitTransaction() *EjdbError {
 	res := C.ejdbtrancommit(coll.ptr)
 	if res {
 		return nil
-	} else {
-		return coll.ejdb.check_error()
 	}
+	return coll.ejdb.check_error()
 }
 
 // Abort transaction for EJDB collection.
@@ -206,9 +201,8 @@ func (coll *EjColl) AbortTransaction() *EjdbError {
 	res := C.ejdbtranabort(coll.ptr)
 	if res {
 		return nil
-	} else {
-		return coll.ejdb.check_error()
 	}
+	return coll.ejdb.check_error()
 }
 
 // Get current transaction status. Return true if a transaction is active, false otherwise.
@@ -223,7 +217,6 @@ func (coll *EjColl) Sync() (bool, *EjdbError) {
 	ret := C.ejdbsyncoll(coll.ptr)
 	if ret {
 		return bool(ret), nil
-	} else {
-		return bool(ret), coll.ejdb.check_error()
 	}
+	return bool(ret), coll.ejdb.check_error()
 }

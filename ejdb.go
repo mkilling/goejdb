@@ -80,9 +80,8 @@ func new_ejdb() *Ejdb {
 	ejdb.ptr = C.ejdbnew()
 	if ejdb.ptr == nil {
 		return nil
-	} else {
-		return ejdb
 	}
+	return ejdb
 }
 
 // Returns EJDB library version string. Eg: "1.1.13"
@@ -194,9 +193,8 @@ func (ejdb *Ejdb) CreateColl(colname string, opts *EjCollOpts) (*EjColl, *EjdbEr
 
 	if ret.ptr != nil {
 		return ret, nil
-	} else {
-		return nil, ejdb.check_error()
 	}
+	return nil, ejdb.check_error()
 }
 
 // Removes collections specified by `colname`.
@@ -208,9 +206,8 @@ func (ejdb *Ejdb) RmColl(colname string, unlinkfile bool) (bool, *EjdbError) {
 	res := C.ejdbrmcoll(ejdb.ptr, c_colname, C._Bool(unlinkfile))
 	if res {
 		return bool(res), nil
-	} else {
-		return bool(res), ejdb.check_error()
 	}
+	return bool(res), ejdb.check_error()
 }
 
 // Synchronize entire EJDB database and all of its collections with storage.
@@ -218,9 +215,8 @@ func (ejdb *Ejdb) Sync() (bool, *EjdbError) {
 	ret := C.ejdbsyncdb(ejdb.ptr)
 	if ret {
 		return bool(ret), nil
-	} else {
-		return bool(ret), ejdb.check_error()
 	}
+	return bool(ret), ejdb.check_error()
 }
 
 // Gets description of EJDB database and its collections as a BSON object.
