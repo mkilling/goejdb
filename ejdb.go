@@ -229,3 +229,59 @@ func (ejdb *Ejdb) Meta() ([]byte, *EjdbError) {
 	defer C.bson_del(bson)
 	return bson_to_byte_slice(bson), nil
 }
+
+// Execute ejdb database command.
+//
+// Supported commands:
+//
+//
+//  1) Exports database collections data. See ejdbexport() method.
+//
+//    "export" : {
+//          "path" : string,                    //Exports database collections data
+//          "cnames" : [string array]|null,     //List of collection names to export
+//          "mode" : int|null                   //Values: null|`JBJSONEXPORT` See ejdbexport() method
+//    }
+//
+//    Command response:
+//       {
+//          "log" : string,        //Diagnostic log about executing this command
+//          "error" : string|null, //ejdb error message
+//          "errorCode" : int|0,   //ejdb error code
+//       }
+//
+//  2) Imports previously exported collections data into ejdb.
+//
+//    "import" : {
+//          "path" : string                     //The directory path in which data resides
+//          "cnames" : [string array]|null,     //List of collection names to import
+//          "mode" : int|null                //Values: null|`JBIMPORTUPDATE`|`JBIMPORTREPLACE` See ejdbimport() method
+//     }
+//
+//     Command response:
+//       {
+//          "log" : string,        //Diagnostic log about executing this command
+//          "error" : string|null, //ejdb error message
+//          "errorCode" : int|0,   //ejdb error code
+//       }
+func (ejdb *Ejdb) Command(bson []byte) (*[]byte, *EjdbError) {
+	c_bson := bson_from_byte_slice(bson)
+	defer C.bson_destroy(c_bson)
+	return ejdb.command(c_bson)
+}
+
+func (ejdb *Ejdb) JsonCommand(json string) (*[]byte, *EjdbError) {
+	c_bson := bson_from_json(json)
+	defer C.bson_destroy(c_bson)
+	return ejdb.command(c_bson)
+}
+
+func (ejdb *Ejdb) command(c_bson *C.bson) (*[]byte, *EjdbError) {
+	out_c_bson := C.ejdbcommand(ejdb.ptr, c_bson)
+	if out_c_bson == nil {
+		return nil, ejdb.check_error()
+	}
+	defer C.bson_destroy(out_c_bson)
+	out_bson := bson_to_byte_slice(out_c_bson)
+	return &out_bson, nil
+}

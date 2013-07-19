@@ -420,6 +420,30 @@ func TestTransactions(t *testing.T) {
 	}
 }
 
+func TestEjdbCommand(t *testing.T) {
+	bytes, _ := bson.Marshal(make_test_type())
+
+	ejdb := open()
+	coll, _ := ejdb.CreateColl("MyNewColl", nil)
+	coll.SaveBson(bytes)
+
+	res, err := ejdb.JsonCommand(`
+		"export" : {
+			"path" : "/tmp/command_test.ejdb",
+			"cnames" : null,
+			"mode" : null }`)
+
+	if err != nil {
+		t.Errorf("JsonCommand() failed with %v", err)
+	}
+
+	var m map[string]interface{}
+	bson.Unmarshal(*res, &m)
+	if m["error"] != nil {
+		t.Errorf("JsonCommand() failed with %v, log: %v", m["error"], m["log"])
+	}
+}
+
 func TestOneSnippetIntroFromReadme(t *testing.T) {
 	// Create a new database file and open it
 	jb, err := Open("/tmp/addressbook", JBOWRITER | JBOCREAT | JBOTRUNC)
