@@ -30,36 +30,36 @@ const (
 
 // Error codes
 const (
-    // Invalid collection name.
-    JBEINVALIDCOLNAME = C.JBEINVALIDCOLNAME
-    // Invalid bson object.
-    JBEINVALIDBSON = C.JBEINVALIDBSON
-    // Invalid bson object id.
-    JBEINVALIDBSONPK = C.JBEINVALIDBSONPK
-    // Invalid query control field starting with '$'.
-    JBEQINVALIDQCONTROL = C.JBEQINVALIDQCONTROL
-    // $strand, $stror, $in, $nin, $bt keys requires not empty array value.
-    JBEQINOPNOTARRAY = C.JBEQINOPNOTARRAY
-    // Inconsistent database metadata.
-    JBEMETANVALID = C.JBEMETANVALID
-    // Invalid field path value.
-    JBEFPATHINVALID = C.JBEFPATHINVALID
-    // Invalid query regexp value.
-    JBEQINVALIDQRX = C.JBEQINVALIDQRX
-    // Result set sorting error.
-    JBEQRSSORTING = C.JBEQRSSORTING
-    // Query generic error.
-    JBEQERROR = C.JBEQERROR
-    // Updating failed.
-    JBEQUPDFAILED = C.JBEQUPDFAILED
-    // Only one $elemMatch allowed in the fieldpath.
-    JBEQONEEMATCH = C.JBEQONEEMATCH
-    // $fields hint cannot mix include and exclude fields
-    JBEQINCEXCL = C.JBEQINCEXCL
-    // action key in $do block can only be one of: $join
-    JBEQACTKEY = C.JBEQACTKEY
-    // Exceeded the maximum number of collections per database
-    JBEMAXNUMCOLS = C.JBEMAXNUMCOLS
+	// Invalid collection name.
+	JBEINVALIDCOLNAME = C.JBEINVALIDCOLNAME
+	// Invalid bson object.
+	JBEINVALIDBSON = C.JBEINVALIDBSON
+	// Invalid bson object id.
+	JBEINVALIDBSONPK = C.JBEINVALIDBSONPK
+	// Invalid query control field starting with '$'.
+	JBEQINVALIDQCONTROL = C.JBEQINVALIDQCONTROL
+	// $strand, $stror, $in, $nin, $bt keys requires not empty array value.
+	JBEQINOPNOTARRAY = C.JBEQINOPNOTARRAY
+	// Inconsistent database metadata.
+	JBEMETANVALID = C.JBEMETANVALID
+	// Invalid field path value.
+	JBEFPATHINVALID = C.JBEFPATHINVALID
+	// Invalid query regexp value.
+	JBEQINVALIDQRX = C.JBEQINVALIDQRX
+	// Result set sorting error.
+	JBEQRSSORTING = C.JBEQRSSORTING
+	// Query generic error.
+	JBEQERROR = C.JBEQERROR
+	// Updating failed.
+	JBEQUPDFAILED = C.JBEQUPDFAILED
+	// Only one $elemMatch allowed in the fieldpath.
+	JBEQONEEMATCH = C.JBEQONEEMATCH
+	// $fields hint cannot mix include and exclude fields
+	JBEQINCEXCL = C.JBEQINCEXCL
+	// action key in $do block can only be one of: $join
+	JBEQACTKEY = C.JBEQACTKEY
+	// Exceeded the maximum number of collections per database
+	JBEMAXNUMCOLS = C.JBEMAXNUMCOLS
 )
 
 const maxslice = 1<<31 - 1
