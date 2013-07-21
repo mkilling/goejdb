@@ -302,7 +302,6 @@ func (ejdb *Ejdb) Export(path string, cnames *[]string, flags int) (log string, 
 
 		C.ejdbexport(ejdb.ptr, c_path, tclist, C.int(flags), c_log)
 	} else {
-		fmt.Printf("cejdbexport(%p, %v, nil, %v, %v)\n", ejdb.ptr, c_path, C.int(flags), c_log)
 		C.ejdbexport(ejdb.ptr, c_path, nil, C.int(flags), c_log)
 	}
 
