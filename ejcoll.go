@@ -35,13 +35,13 @@ type EjColl struct {
 // EJDB collection tuning options
 type EjCollOpts struct {
 	// Large collection. It can be larger than 2GB. Default false
-	large         bool
+	Large         bool
 	// Collection records will be compressed with DEFLATE compression. Default: false
-	compressed    bool
+	Compressed    bool
 	// Expected records number in the collection. Default: 128K
-	records       int
+	Records       int
 	// Maximum number of cached records. Default: 0
-	cachedrecords int
+	CachedRecords int
 }
 
 func (coll *EjColl) save_c_bson(c_bson *C.bson) (string, *EjdbError) {

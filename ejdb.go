@@ -182,10 +182,10 @@ func (ejdb *Ejdb) CreateColl(colname string, opts *EjCollOpts) (*EjColl, *EjdbEr
 
 	if opts != nil {
 		var c_opts C.EJCOLLOPTS
-		c_opts.large = C._Bool(opts.large)
-		c_opts.compressed = C._Bool(opts.large)
-		c_opts.records = C.int64_t(opts.records)
-		c_opts.cachedrecords = C.int(opts.cachedrecords)
+		c_opts.large = C._Bool(opts.Large)
+		c_opts.compressed = C._Bool(opts.Large)
+		c_opts.records = C.int64_t(opts.Records)
+		c_opts.cachedrecords = C.int(opts.CachedRecords)
 		ret.ptr = C.ejdbcreatecoll(ejdb.ptr, c_colname, &c_opts)
 	} else {
 		ret.ptr = C.ejdbcreatecoll(ejdb.ptr, c_colname, nil)

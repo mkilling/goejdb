@@ -76,7 +76,7 @@ func TestCreateColl(t *testing.T) {
 
 func TestCreateCollWithOptions(t *testing.T) {
 	ejdb := open()
-	coll, err := ejdb.CreateColl("MyNewColl", &EjCollOpts{large: true, compressed: true, records: 1280000, cachedrecords: 0})
+	coll, err := ejdb.CreateColl("MyNewColl", &EjCollOpts{Large: true, Compressed: true, Records: 1280000, CachedRecords: 0})
 	if err != nil {
 		t.Errorf("CreateColl() failed with %v", err)
 	}
