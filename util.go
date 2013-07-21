@@ -58,11 +58,3 @@ func bson_from_json(j string) *C.bson {
 	bytes, _ := bson.Marshal(&m)
 	return bson_from_byte_slice(bytes)
 }
-
-func bson_destroy(bson *C.bson) {
-	C.bson_destroy(bson)
-}
-
-func bson_del(bson *C.bson) {
-	C.bson_del(bson)
-}
