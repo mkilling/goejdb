@@ -230,6 +230,87 @@ func (ejdb *Ejdb) Meta() ([]byte, *EjdbError) {
 	return bson_to_byte_slice(bson), nil
 }
 
+// Imports previously exported collections data into ejdb.
+// Global database write lock will be applied during import operation.
+//
+// NOTE: Only data exported as BSONs can be imported with `Ejdb.Import()`
+//
+// `path` is the directory path in which data resides.
+// `cnames` is a list of collection names to import. `nil` implies that all collections found in `path` will be imported.
+// `flags` can be one of:
+//             `JBIMPORTUPDATE`  Update existing collection entries with imported ones.
+//                               Existing collections will not be recreated.
+//                               For existing collections options will not be imported.
+//
+//             `JBIMPORTREPLACE` Recreate existing collections and replace
+//                               all their data with imported entries.
+//                               Collections options will be imported.
+//
+//             `0`              Implies `JBIMPORTUPDATE`
+// Import() returns the log for the operation as a string
+func (ejdb *Ejdb) Import(path string, cnames *[]string, flags int) (log string, err *EjdbError) {
+	c_path := C.CString(path)
+	defer C.free(unsafe.Pointer(c_path))
+
+	c_log := C.tcxstrnew()
+	defer C.tcxstrdel(c_log)
+
+	if cnames != nil {
+		tclist := C.tclistnew2(C.int(len(*cnames)))
+		defer C.tclistdel(tclist)
+		for i := 0; i < len(*cnames); i++ {
+			cname := C.CString((*cnames)[i])
+			defer C.free(unsafe.Pointer(cname))
+			C.tclistpush2(tclist, cname)
+		}
+
+		C.ejdbimport(ejdb.ptr, c_path, tclist, C.int(flags), c_log)
+	} else {
+		C.ejdbimport(ejdb.ptr, c_path, nil, C.int(flags), c_log)
+	}
+
+	c_chars := C.tcxstrptr(c_log)
+	ret := C.GoString((*C.char)(c_chars))
+
+	return ret, ejdb.check_error()
+}
+
+// Exports database collections data to the specified directory.
+// Database read lock will be taken on each collection.
+//
+// NOTE: Only data exported as BSONs can be imported with `Ejdb.Import()`
+//
+// `path` is the directory path in which data will be exported.
+// `cnames` is a list of collection names to export. `nil` implies that all existing collections will be exported.
+// `flags` can be set to `JBJSONEXPORT` in order to export data as JSON files instead exporting into BSONs.
+// Export() returns the log for the operation as a string
+func (ejdb *Ejdb) Export(path string, cnames *[]string, flags int) (log string, err *EjdbError) {
+	c_path := C.CString(path)
+	defer C.free(unsafe.Pointer(c_path))
+
+	c_log := C.tcxstrnew()
+	defer C.tcxstrdel(c_log)
+
+	if cnames != nil {
+		tclist := C.tclistnew2(C.int(len(*cnames)))
+		defer C.tclistdel(tclist)
+		for i := 0; i < len(*cnames); i++ {
+			cname := C.CString((*cnames)[i])
+			defer C.free(unsafe.Pointer(cname))
+			C.tclistpush2(tclist, cname)
+		}
+
+		C.ejdbexport(ejdb.ptr, c_path, tclist, C.int(flags), c_log)
+	} else {
+		C.ejdbexport(ejdb.ptr, c_path, nil, C.int(flags), c_log)
+	}
+
+	c_chars := C.tcxstrptr(c_log)
+	ret := C.GoString((*C.char)(c_chars))
+
+	return ret, ejdb.check_error()
+}
+
 // Execute ejdb database command.
 //
 // Supported commands:

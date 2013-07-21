@@ -420,6 +420,64 @@ func TestTransactions(t *testing.T) {
 	}
 }
 
+func TestExportAndImport(t *testing.T) {
+	bytes, _ := bson.Marshal(make_test_type())
+
+	ejdb1 := open()
+	coll, _ := ejdb1.CreateColl("MyNewColl", nil)
+	uid, _ := coll.SaveBson(bytes)
+
+	log1, err1 := ejdb1.Export("/tmp/export_test.ejdb", nil, 0)
+	if err1 != nil {
+		t.Errorf("Export() failed with %v, log: %v", err1, log1)
+	}
+	ejdb1.Close()
+
+	ejdb2 := open()
+
+	log2, err2 := ejdb2.Import("/tmp/export_test.ejdb", nil, 0)
+	if err2 != nil {
+		t.Errorf("Import() failed with %v, log: %v", err2, log2)
+	}
+
+	coll2, _ := ejdb2.GetColl("MyNewColl")
+	bs := coll2.LoadBson(uid)
+	var m map[string]interface{}
+	bson.Unmarshal(bs, &m)
+	if m["i"] != 5 {
+		t.Errorf("Expected imported BSON to have value 5 for key [\"i\"], but was %v", m["i"])
+	}
+}
+
+func TestExportAndImportForSpecificCollection(t *testing.T) {
+	bytes, _ := bson.Marshal(make_test_type())
+
+	ejdb1 := open()
+	coll, _ := ejdb1.CreateColl("MyNewColl", nil)
+	uid, _ := coll.SaveBson(bytes)
+
+	log1, err1 := ejdb1.Export("/tmp/export_test2.ejdb", &[]string{"MyNewColl"}, 0)
+	if err1 != nil {
+		t.Errorf("Export() failed with %v, log: %v", err1, log1)
+	}
+	ejdb1.Close()
+
+	ejdb2 := open()
+
+	log2, err2 := ejdb2.Import("/tmp/export_test2.ejdb", &[]string{"MyNewColl"}, 0)
+	if err2 != nil {
+		t.Errorf("Import() failed with %v, log: %v", err2, log2)
+	}
+
+	coll2, _ := ejdb2.GetColl("MyNewColl")
+	bs := coll2.LoadBson(uid)
+	var m map[string]interface{}
+	bson.Unmarshal(bs, &m)
+	if m["i"] != 5 {
+		t.Errorf("Expected imported BSON to have value 5 for key [\"i\"], but was %v", m["i"])
+	}
+}
+
 func TestEjdbCommand(t *testing.T) {
 	bytes, _ := bson.Marshal(make_test_type())
 
