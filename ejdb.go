@@ -75,6 +75,18 @@ type EjdbError struct {
 	error
 }
 
+// EJDB collection tuning options
+type EjCollOpts struct {
+	// Large collection. It can be larger than 2GB. Default false
+	Large         bool
+	// Collection records will be compressed with DEFLATE compression. Default: false
+	Compressed    bool
+	// Expected records number in the collection. Default: 128K
+	Records       int
+	// Maximum number of cached records. Default: 0
+	CachedRecords int
+}
+
 func new_ejdb() *Ejdb {
 	ejdb := new(Ejdb)
 	ejdb.ptr = C.ejdbnew()
