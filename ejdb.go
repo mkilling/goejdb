@@ -281,7 +281,7 @@ func (ejdb *Ejdb) command(c_bson *C.bson) (*[]byte, *EjdbError) {
 	if out_c_bson == nil {
 		return nil, ejdb.check_error()
 	}
-	defer C.bson_destroy(out_c_bson)
+	defer C.bson_del(out_c_bson)
 	out_bson := bson_to_byte_slice(out_c_bson)
 	return &out_bson, nil
 }
