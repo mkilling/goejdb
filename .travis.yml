@@ -15,5 +15,5 @@ before_install:
   - cmake -DCMAKE_BUILD_TYPE=Release ../
   - make
   - cd ../..
-  - export PATH=$(pwd)/ejdb/build/src
-  - export CPATH=$(pwd)/ejdb/src
+  - export PATH=$PATH:$(pwd)/ejdb/build/src
+  - export CPATH=$CPATH:$(pwd)/ejdb/src
