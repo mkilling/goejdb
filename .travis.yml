@@ -16,4 +16,5 @@ before_install:
   - make
   - cd ../..
   - export LIBRARY_PATH=$LIBRARY_PATH:$(pwd)/ejdb/build/src
+  - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/ejdb/build/src
   - export CPATH=$CPATH:$(pwd)/ejdb/src:$(pwd)/ejdb/src/bson:$(pwd)/ejdb/build/src/generated:$(pwd)/ejdb/src/tcutil
