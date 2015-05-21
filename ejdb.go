@@ -5,241 +5,241 @@ package goejdb
 import "C"
 
 import (
-	"errors"
-	"fmt"
-	"unsafe"
+    "errors"
+    "fmt"
+    "unsafe"
 )
 
 // Database open modes
 const (
-	// Open as a reader.
-	JBOREADER = C.JBOREADER
-	// Open as a writer.
-	JBOWRITER = C.JBOWRITER
-	// Create if db file not exists.
-	JBOCREAT  = C.JBOCREAT
-	// Truncate db on open.
-	JBOTRUNC  = C.JBOTRUNC
-	// Open without locking.
-	JBONOLCK  = C.JBONOLCK
-	// Lock without blocking.
-	JBOLCKNB  = C.JBOLCKNB
-	// Synchronize every transaction.
-	JBOTSYNC  = C.JBOTSYNC
+    // Open as a reader.
+    JBOREADER = C.JBOREADER
+    // Open as a writer.
+    JBOWRITER = C.JBOWRITER
+    // Create if db file not exists.
+    JBOCREAT  = C.JBOCREAT
+    // Truncate db on open.
+    JBOTRUNC  = C.JBOTRUNC
+    // Open without locking.
+    JBONOLCK  = C.JBONOLCK
+    // Lock without blocking.
+    JBOLCKNB  = C.JBOLCKNB
+    // Synchronize every transaction.
+    JBOTSYNC  = C.JBOTSYNC
 )
 
 // Error codes
 const (
-	// Invalid collection name.
-	JBEINVALIDCOLNAME = C.JBEINVALIDCOLNAME
-	// Invalid bson object.
-	JBEINVALIDBSON = C.JBEINVALIDBSON
-	// Invalid bson object id.
-	JBEINVALIDBSONPK = C.JBEINVALIDBSONPK
-	// Invalid query control field starting with '$'.
-	JBEQINVALIDQCONTROL = C.JBEQINVALIDQCONTROL
-	// $strand, $stror, $in, $nin, $bt keys requires not empty array value.
-	JBEQINOPNOTARRAY = C.JBEQINOPNOTARRAY
-	// Inconsistent database metadata.
-	JBEMETANVALID = C.JBEMETANVALID
-	// Invalid field path value.
-	JBEFPATHINVALID = C.JBEFPATHINVALID
-	// Invalid query regexp value.
-	JBEQINVALIDQRX = C.JBEQINVALIDQRX
-	// Result set sorting error.
-	JBEQRSSORTING = C.JBEQRSSORTING
-	// Query generic error.
-	JBEQERROR = C.JBEQERROR
-	// Updating failed.
-	JBEQUPDFAILED = C.JBEQUPDFAILED
-	// Only one $elemMatch allowed in the fieldpath.
-	JBEQONEEMATCH = C.JBEQONEEMATCH
-	// $fields hint cannot mix include and exclude fields
-	JBEQINCEXCL = C.JBEQINCEXCL
-	// action key in $do block can only be one of: $join
-	JBEQACTKEY = C.JBEQACTKEY
-	// Exceeded the maximum number of collections per database
-	JBEMAXNUMCOLS = C.JBEMAXNUMCOLS
+    // Invalid collection name.
+    JBEINVALIDCOLNAME = C.JBEINVALIDCOLNAME
+    // Invalid bson object.
+    JBEINVALIDBSON = C.JBEINVALIDBSON
+    // Invalid bson object id.
+    JBEINVALIDBSONPK = C.JBEINVALIDBSONPK
+    // Invalid query control field starting with '$'.
+    JBEQINVALIDQCONTROL = C.JBEQINVALIDQCONTROL
+    // $strand, $stror, $in, $nin, $bt keys requires not empty array value.
+    JBEQINOPNOTARRAY = C.JBEQINOPNOTARRAY
+    // Inconsistent database metadata.
+    JBEMETANVALID = C.JBEMETANVALID
+    // Invalid field path value.
+    JBEFPATHINVALID = C.JBEFPATHINVALID
+    // Invalid query regexp value.
+    JBEQINVALIDQRX = C.JBEQINVALIDQRX
+    // Result set sorting error.
+    JBEQRSSORTING = C.JBEQRSSORTING
+    // Query generic error.
+    JBEQERROR = C.JBEQERROR
+    // Updating failed.
+    JBEQUPDFAILED = C.JBEQUPDFAILED
+    // Only one $elemMatch allowed in the fieldpath.
+    JBEQONEEMATCH = C.JBEQONEEMATCH
+    // $fields hint cannot mix include and exclude fields
+    JBEQINCEXCL = C.JBEQINCEXCL
+    // action key in $do block can only be one of: $join
+    JBEQACTKEY = C.JBEQACTKEY
+    // Exceeded the maximum number of collections per database
+    JBEMAXNUMCOLS = C.JBEMAXNUMCOLS
 )
 
 const maxslice = 1<<31 - 1
 
 // An EJDB database
 type Ejdb struct {
-	ptr *[0]byte
+    ptr *[0]byte
 }
 
 type EjdbError struct {
-	// Error code returned by EJDB
-	ErrorCode int
-	error
+    // Error code returned by EJDB
+    ErrorCode int
+    error
 }
 
 // EJDB collection tuning options
 type EjCollOpts struct {
-	// Large collection. It can be larger than 2GB. Default false
-	Large         bool
-	// Collection records will be compressed with DEFLATE compression. Default: false
-	Compressed    bool
-	// Expected records number in the collection. Default: 128K
-	Records       int
-	// Maximum number of cached records. Default: 0
-	CachedRecords int
+    // Large collection. It can be larger than 2GB. Default false
+    Large         bool
+    // Collection records will be compressed with DEFLATE compression. Default: false
+    Compressed    bool
+    // Expected records number in the collection. Default: 128K
+    Records       int
+    // Maximum number of cached records. Default: 0
+    CachedRecords int
 }
 
 func new_ejdb() *Ejdb {
-	ejdb := new(Ejdb)
-	ejdb.ptr = C.ejdbnew()
-	if ejdb.ptr == nil {
-		return nil
-	}
-	return ejdb
+    ejdb := new(Ejdb)
+    ejdb.ptr = (*[0]byte)(unsafe.Pointer(C.ejdbnew()))
+    if ejdb.ptr == nil {
+        return nil
+    }
+    return ejdb
 }
 
 // Returns EJDB library version string. Eg: "1.1.13"
 func Version() string {
-	cs := C.ejdbversion()
-	return C.GoString(cs)
+    cs := C.ejdbversion()
+    return C.GoString(cs)
 }
 
 // Return true if passed `oid` string cat be converted to valid 12 bit BSON object identifier (OID).
 func IsValidOidStr(oid string) bool {
-	c_oid := C.CString(oid)
-	res := C.ejdbisvalidoidstr(c_oid)
-	C.free(unsafe.Pointer(c_oid))
+    c_oid := C.CString(oid)
+    res := C.ejdbisvalidoidstr(c_oid)
+    C.free(unsafe.Pointer(c_oid))
 
-	return bool(res)
+    return bool(res)
 }
 
 // Returns a new open EJDB database.
 // path is the path to the database file.
 // options specify the open mode bitmask flags.
 func Open(path string, options int) (*Ejdb, *EjdbError) {
-	ejdb := new_ejdb()
-	if ejdb != nil {
-		c_path := C.CString(path)
-		defer C.free(unsafe.Pointer(c_path))
-		C.ejdbopen(ejdb.ptr, c_path, C.int(options))
-	}
+    ejdb := new_ejdb()
+    if ejdb != nil {
+        c_path := C.CString(path)
+        defer C.free(unsafe.Pointer(c_path))
+        C.ejdbopen((*C.struct_EJDB)(unsafe.Pointer(ejdb.ptr)), c_path, C.int(options))
+    }
 
-	return ejdb, ejdb.check_error()
+    return ejdb, ejdb.check_error()
 }
 
 func (ejdb *Ejdb) check_error() *EjdbError {
-	ecode := C.ejdbecode(ejdb.ptr)
-	if ecode == 0 {
-		return nil
-	}
-	c_msg := C.ejdberrmsg(ecode)
-	msg := C.GoString(c_msg)
-	return &EjdbError{int(ecode), errors.New(fmt.Sprintf("EJDB error: %v", msg))}
+    ecode := C.ejdbecode((*C.struct_EJDB)(unsafe.Pointer(ejdb.ptr)))
+    if ecode == 0 {
+        return nil
+    }
+    c_msg := C.ejdberrmsg(ecode)
+    msg := C.GoString(c_msg)
+    return &EjdbError{int(ecode), errors.New(fmt.Sprintf("EJDB error: %v", msg))}
 }
 
 // Return true if database is in open state, false otherwise
 func (ejdb *Ejdb) IsOpen() bool {
-	ret := C.ejdbisopen(ejdb.ptr)
-	return bool(ret)
+    ret := C.ejdbisopen((*C.struct_EJDB)(unsafe.Pointer(ejdb.ptr)))
+    return bool(ret)
 }
 
 // Delete database object. If the database is not closed, it is closed implicitly.
 // Note that the deleted object and its derivatives can not be used anymore
 func (ejdb *Ejdb) Del() {
-	C.ejdbdel(ejdb.ptr)
+    C.ejdbdel((*C.struct_EJDB)(unsafe.Pointer(ejdb.ptr)))
 }
 
 // Close a table database object. If a writer opens a database but does not close it appropriately, the database will be broken.
 // If successful return true, otherwise return false.
 func (ejdb *Ejdb) Close() *EjdbError {
-	C.ejdbclose(ejdb.ptr)
-	return ejdb.check_error()
+    C.ejdbclose((*C.struct_EJDB)(unsafe.Pointer(ejdb.ptr)))
+    return ejdb.check_error()
 }
 
 // Retrieve collection handle for collection specified `collname`.
 // If collection with specified name does't exists it will return nil.
 func (ejdb *Ejdb) GetColl(colname string) (*EjColl, *EjdbError) {
-	c_colname := C.CString(colname)
-	defer C.free(unsafe.Pointer(c_colname))
+    c_colname := C.CString(colname)
+    defer C.free(unsafe.Pointer(c_colname))
 
-	ejcoll := new(EjColl)
-	ejcoll.ejdb = ejdb
-	ejcoll.ptr = C.ejdbgetcoll(ejdb.ptr, c_colname)
+    ejcoll := new(EjColl)
+    ejcoll.ejdb = ejdb
+    ejcoll.ptr = (*[0]byte)(unsafe.Pointer(C.ejdbgetcoll((*C.struct_EJDB)(unsafe.Pointer(ejdb.ptr)), c_colname)))
 
-	return ejcoll, ejdb.check_error()
+    return ejcoll, ejdb.check_error()
 }
 
 // Return a slice containing shallow copies of all collection handles (EjColl) currently open.
 func (ejdb *Ejdb) GetColls() ([]*EjColl, *EjdbError) {
-	ret := make([]*EjColl, 0)
-	lst := C.ejdbgetcolls(ejdb.ptr)
-	if lst == nil {
-		return ret, ejdb.check_error()
-	}
+    ret := make([]*EjColl, 0)
+    lst := C.ejdbgetcolls((*C.struct_EJDB)(unsafe.Pointer(ejdb.ptr)))
+    if lst == nil {
+        return ret, ejdb.check_error()
+    }
 
-	for i := int(lst.start); i < int(lst.start)+int(lst.num); i++ {
-		ptr := uintptr(unsafe.Pointer(lst.array)) + unsafe.Sizeof(C.TCLISTDATUM{})*uintptr(i)
-		datum := (*C.TCLISTDATUM)(unsafe.Pointer(ptr))
-		datum_ptr := unsafe.Pointer(datum.ptr)
-		ret = append(ret, &EjColl{(*[0]byte)(datum_ptr), ejdb})
-	}
-	return ret, nil
+    for i := int(lst.start); i < int(lst.start)+int(lst.num); i++ {
+        ptr := uintptr(unsafe.Pointer(lst.array)) + unsafe.Sizeof(C.TCLISTDATUM{})*uintptr(i)
+        datum := (*C.TCLISTDATUM)(unsafe.Pointer(ptr))
+        datum_ptr := unsafe.Pointer(datum.ptr)
+        ret = append(ret, &EjColl{(*[0]byte)(datum_ptr), ejdb})
+    }
+    return ret, nil
 }
 
 // Same as GetColl() but automatically creates new collection if it doesn't exists.
 func (ejdb *Ejdb) CreateColl(colname string, opts *EjCollOpts) (*EjColl, *EjdbError) {
-	c_colname := C.CString(colname)
-	defer C.free(unsafe.Pointer(c_colname))
+    c_colname := C.CString(colname)
+    defer C.free(unsafe.Pointer(c_colname))
 
-	ret := new(EjColl)
-	ret.ejdb = ejdb
+    ret := new(EjColl)
+    ret.ejdb = ejdb
 
-	if opts != nil {
-		var c_opts C.EJCOLLOPTS
-		c_opts.large = C._Bool(opts.Large)
-		c_opts.compressed = C._Bool(opts.Large)
-		c_opts.records = C.int64_t(opts.Records)
-		c_opts.cachedrecords = C.int(opts.CachedRecords)
-		ret.ptr = C.ejdbcreatecoll(ejdb.ptr, c_colname, &c_opts)
-	} else {
-		ret.ptr = C.ejdbcreatecoll(ejdb.ptr, c_colname, nil)
-	}
+    if opts != nil {
+        var c_opts C.EJCOLLOPTS
+        c_opts.large = C._Bool(opts.Large)
+        c_opts.compressed = C._Bool(opts.Large)
+        c_opts.records = C.int64_t(opts.Records)
+        c_opts.cachedrecords = C.int(opts.CachedRecords)
+        ret.ptr = (*[0]byte)(unsafe.Pointer(C.ejdbcreatecoll((*C.struct_EJDB)(unsafe.Pointer(ejdb.ptr)), c_colname, &c_opts)))
+    } else {
+        ret.ptr = (*[0]byte)(unsafe.Pointer(C.ejdbcreatecoll((*C.struct_EJDB)(unsafe.Pointer(ejdb.ptr)), c_colname, nil)))
+    }
 
-	if ret.ptr != nil {
-		return ret, nil
-	}
-	return nil, ejdb.check_error()
+    if ret.ptr != nil {
+        return ret, nil
+    }
+    return nil, ejdb.check_error()
 }
 
 // Removes collections specified by `colname`.
 // If `unlinkfile` is true the collection db file and all of its index files will be removed.
 // If removal was successful return true, otherwise return false.
 func (ejdb *Ejdb) RmColl(colname string, unlinkfile bool) (bool, *EjdbError) {
-	c_colname := C.CString(colname)
-	defer C.free(unsafe.Pointer(c_colname))
-	res := C.ejdbrmcoll(ejdb.ptr, c_colname, C._Bool(unlinkfile))
-	if res {
-		return bool(res), nil
-	}
-	return bool(res), ejdb.check_error()
+    c_colname := C.CString(colname)
+    defer C.free(unsafe.Pointer(c_colname))
+    res := C.ejdbrmcoll((*C.struct_EJDB)(unsafe.Pointer(ejdb.ptr)), c_colname, C._Bool(unlinkfile))
+    if res {
+        return bool(res), nil
+    }
+    return bool(res), ejdb.check_error()
 }
 
 // Synchronize entire EJDB database and all of its collections with storage.
 func (ejdb *Ejdb) Sync() (bool, *EjdbError) {
-	ret := C.ejdbsyncdb(ejdb.ptr)
-	if ret {
-		return bool(ret), nil
-	}
-	return bool(ret), ejdb.check_error()
+    ret := C.ejdbsyncdb((*C.struct_EJDB)(unsafe.Pointer(ejdb.ptr)))
+    if ret {
+        return bool(ret), nil
+    }
+    return bool(ret), ejdb.check_error()
 }
 
 // Gets description of EJDB database and its collections as a BSON object.
 func (ejdb *Ejdb) Meta() ([]byte, *EjdbError) {
-	bson := C.ejdbmeta(ejdb.ptr)
-	err := ejdb.check_error()
-	if err != nil {
-		return make([]byte, 0), err
-	}
-	defer C.bson_del(bson)
-	return bson_to_byte_slice(bson), nil
+    bson := C.ejdbmeta((*C.struct_EJDB)(unsafe.Pointer(ejdb.ptr)))
+    err := ejdb.check_error()
+    if err != nil {
+        return make([]byte, 0), err
+    }
+    defer C.bson_del(bson)
+    return bson_to_byte_slice(bson), nil
 }
 
 // Imports previously exported collections data into ejdb.
@@ -261,30 +261,30 @@ func (ejdb *Ejdb) Meta() ([]byte, *EjdbError) {
 //             `0`              Implies `JBIMPORTUPDATE`
 // Import() returns the log for the operation as a string
 func (ejdb *Ejdb) Import(path string, cnames *[]string, flags int) (log string, err *EjdbError) {
-	c_path := C.CString(path)
-	defer C.free(unsafe.Pointer(c_path))
+    c_path := C.CString(path)
+    defer C.free(unsafe.Pointer(c_path))
 
-	c_log := C.tcxstrnew()
-	defer C.tcxstrdel(c_log)
+    c_log := C.tcxstrnew()
+    defer C.tcxstrdel(c_log)
 
-	if cnames != nil {
-		tclist := C.tclistnew2(C.int(len(*cnames)))
-		defer C.tclistdel(tclist)
-		for i := 0; i < len(*cnames); i++ {
-			cname := C.CString((*cnames)[i])
-			defer C.free(unsafe.Pointer(cname))
-			C.tclistpush2(tclist, cname)
-		}
+    if cnames != nil {
+        tclist := C.tclistnew2(C.int(len(*cnames)))
+        defer C.tclistdel(tclist)
+        for i := 0; i < len(*cnames); i++ {
+            cname := C.CString((*cnames)[i])
+            defer C.free(unsafe.Pointer(cname))
+            C.tclistpush2(tclist, cname)
+        }
 
-		C.ejdbimport(ejdb.ptr, c_path, tclist, C.int(flags), c_log)
-	} else {
-		C.ejdbimport(ejdb.ptr, c_path, nil, C.int(flags), c_log)
-	}
+        C.ejdbimport((*C.struct_EJDB)(unsafe.Pointer(ejdb.ptr)), c_path, tclist, C.int(flags), c_log)
+    } else {
+        C.ejdbimport((*C.struct_EJDB)(unsafe.Pointer(ejdb.ptr)), c_path, nil, C.int(flags), c_log)
+    }
 
-	c_chars := C.tcxstrptr(c_log)
-	ret := C.GoString((*C.char)(c_chars))
+    c_chars := C.tcxstrptr(c_log)
+    ret := C.GoString((*C.char)(c_chars))
 
-	return ret, ejdb.check_error()
+    return ret, ejdb.check_error()
 }
 
 // Exports database collections data to the specified directory.
@@ -297,30 +297,30 @@ func (ejdb *Ejdb) Import(path string, cnames *[]string, flags int) (log string, 
 // `flags` can be set to `JBJSONEXPORT` in order to export data as JSON files instead exporting into BSONs.
 // Export() returns the log for the operation as a string
 func (ejdb *Ejdb) Export(path string, cnames *[]string, flags int) (log string, err *EjdbError) {
-	c_path := C.CString(path)
-	defer C.free(unsafe.Pointer(c_path))
+    c_path := C.CString(path)
+    defer C.free(unsafe.Pointer(c_path))
 
-	c_log := C.tcxstrnew()
-	defer C.tcxstrdel(c_log)
+    c_log := C.tcxstrnew()
+    defer C.tcxstrdel(c_log)
 
-	if cnames != nil {
-		tclist := C.tclistnew2(C.int(len(*cnames)))
-		defer C.tclistdel(tclist)
-		for i := 0; i < len(*cnames); i++ {
-			cname := C.CString((*cnames)[i])
-			defer C.free(unsafe.Pointer(cname))
-			C.tclistpush2(tclist, cname)
-		}
+    if cnames != nil {
+        tclist := C.tclistnew2(C.int(len(*cnames)))
+        defer C.tclistdel(tclist)
+        for i := 0; i < len(*cnames); i++ {
+            cname := C.CString((*cnames)[i])
+            defer C.free(unsafe.Pointer(cname))
+            C.tclistpush2(tclist, cname)
+        }
 
-		C.ejdbexport(ejdb.ptr, c_path, tclist, C.int(flags), c_log)
-	} else {
-		C.ejdbexport(ejdb.ptr, c_path, nil, C.int(flags), c_log)
-	}
+        C.ejdbexport((*C.struct_EJDB)(unsafe.Pointer(ejdb.ptr)), c_path, tclist, C.int(flags), c_log)
+    } else {
+        C.ejdbexport((*C.struct_EJDB)(unsafe.Pointer(ejdb.ptr)), c_path, nil, C.int(flags), c_log)
+    }
 
-	c_chars := C.tcxstrptr(c_log)
-	ret := C.GoString((*C.char)(c_chars))
+    c_chars := C.tcxstrptr(c_log)
+    ret := C.GoString((*C.char)(c_chars))
 
-	return ret, ejdb.check_error()
+    return ret, ejdb.check_error()
 }
 
 // Execute ejdb database command.
@@ -358,23 +358,23 @@ func (ejdb *Ejdb) Export(path string, cnames *[]string, flags int) (log string, 
 //          "errorCode" : int|0,   //ejdb error code
 //       }
 func (ejdb *Ejdb) Command(bson []byte) (*[]byte, *EjdbError) {
-	c_bson := bson_from_byte_slice(bson)
-	defer C.bson_destroy(c_bson)
-	return ejdb.command(c_bson)
+    c_bson := bson_from_byte_slice(bson)
+    defer C.bson_destroy(c_bson)
+    return ejdb.command(c_bson)
 }
 
 func (ejdb *Ejdb) JsonCommand(json string) (*[]byte, *EjdbError) {
-	c_bson := bson_from_json(json)
-	defer C.bson_destroy(c_bson)
-	return ejdb.command(c_bson)
+    c_bson := bson_from_json(json)
+    defer C.bson_destroy(c_bson)
+    return ejdb.command(c_bson)
 }
 
 func (ejdb *Ejdb) command(c_bson *C.bson) (*[]byte, *EjdbError) {
-	out_c_bson := C.ejdbcommand(ejdb.ptr, c_bson)
-	if out_c_bson == nil {
-		return nil, ejdb.check_error()
-	}
-	defer C.bson_del(out_c_bson)
-	out_bson := bson_to_byte_slice(out_c_bson)
-	return &out_bson, nil
+    out_c_bson := C.ejdbcommand((*C.struct_EJDB)(unsafe.Pointer(ejdb.ptr)), c_bson)
+    if out_c_bson == nil {
+        return nil, ejdb.check_error()
+    }
+    defer C.bson_del(out_c_bson)
+    out_bson := bson_to_byte_slice(out_c_bson)
+    return &out_bson, nil
 }
