@@ -61,7 +61,7 @@ Installation
 **System libraries:**
 
 * Google Go
-* installed tcejdb (see [https://github.com/Softmotions/ejdb/tree/master/tcejdb](https://github.com/Softmotions/ejdb/tree/master/tcejdb) or [Installing on Debian/Ubuntu](https://github.com/Softmotions/ejdb/wiki/Debian-Ubuntu-installation))
+* installed ejdb (see [https://github.com/Softmotions/ejdb](https://github.com/Softmotions/ejdb) or [Installing on Debian/Ubuntu](https://github.com/Softmotions/ejdb/wiki/Debian-Ubuntu-installation))
 
 ### Install
 
