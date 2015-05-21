@@ -1,7 +1,7 @@
 package goejdb
 
-// #cgo LDFLAGS: -ltcejdb
-// #include <tcejdb/ejdb.h>
+// #cgo LDFLAGS: -lejdb
+// #include <ejdb/ejdb.h>
 import "C"
 
 import (

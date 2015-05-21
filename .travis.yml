@@ -8,8 +8,9 @@ go:
 
 before_install:
   - git clone https://github.com/Softmotions/ejdb.git
-  - cd ejdb/tcejdb
-  - ./configure
+  - cd ejdb
+  - mkdir build
+  - cd build
+  - cmake -DCMAKE_BUILD_TYPE=Release ../
   - make
-  - sudo make install
   - cd ../..
